@@ -11,7 +11,7 @@ from dynamically_dimensioned_search import DynamicallyDimensionedSearch
 from combined_dds_gd import CombinedDDSGD
 
 TEST_REPEAT = 1000
-TEST_ITTERATIONS = 1000
+TEST_ITTERATIONS = 100
 TEST_DIMENSIONS = 10
 
 
@@ -148,8 +148,4 @@ if __name__ == "__main__":
 
     print("\nTesting Dynamically Dimensioned Search...")
     test_class = TestProblem(DynamicallyDimensionedSearch, TEST_DIMENSIONS)
-    test_class.run_all(TEST_REPEAT)
-
-    print("\nTesting Combined...")
-    test_class = TestProblem(CombinedDDSGD, TEST_DIMENSIONS)
     test_class.run_all(TEST_REPEAT)

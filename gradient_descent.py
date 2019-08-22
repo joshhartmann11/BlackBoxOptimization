@@ -1,28 +1,37 @@
 """
-Gradient descent uses approximations of gradients to minimize a function.
+Gradient descent uses approximations of gradients to minimize the function.
+Implemented with Adam for faster, more robust, convergence
 """
 
 import black_box_optimization as bbo
+import math
 
 class GradientDescent(bbo.Optimization):
 
     RELATIVE_EPSILON = 0.00001
-    MOMENTUM_INCREMENT = lambda self, x: 0.1 / (x + 0.1)**2
 
-    def optimize(self, m=1000, step=0.2, momentum=True):
-        # Construct momentum structures for the
-        prev_grad = {}
-        momentum = {}
+    """
+    args:
+        m: Itterations
+        alpha: learning rate
+        beta: momentum rate
+        gamma: RMS rate
+    """
+    def optimize(self, m=1000, alpha=0.3, beta=0.9, gamma=0.999):
+        # Construct momentum structure
+        momentum_coeffs = {}
+        rms_coeffs = {}
         for p in self.params:
-            prev_grad[p] = 0
-            momentum[p] = 1.0
+            momentum_coeffs[p] = 0
+            rms_coeffs[p] = 0
 
         parameter_num = 0
 
         for i in range(int(m / 2)):
             p = self.params[parameter_num]
-            mom = momentum[p]
-            p_grad = prev_grad[p]
+            mom = momentum_coeffs[p]
+            rms = rms_coeffs[p]
+
             # Calculate the value
             t1 = self._run()
             self.error = t1
@@ -38,28 +47,28 @@ class GradientDescent(bbo.Optimization):
             grad = (t2 - t1) / epsilon
 
             # Update momentum
-            if momentum:
-                if grad * p_grad > 0: # both positive or both negative
-                    mom += self.MOMENTUM_INCREMENT(mom)
-                else:
-                    mom = mom / 2
+            rms = (gamma * rms) + ((1 - gamma) * grad**2)
+            rms_coeffs[p] = rms
 
-            # Update value
-            p.value -= (grad * mom) * step - epsilon
+            # Update RMS
+            mom = (beta * mom) + ((1 - beta) * grad)
+            momentum_coeffs[p] = mom
+
+            # Update value and constrain (Adam)
+            p.value -= alpha * (mom) / (math.sqrt(rms) + epsilon) - epsilon
             if (p.value > p.max):
                 p.value = p.max
             elif (p.value < p.min):
                 p.value = p.min
 
-            momentum[p] = mom
-            prev_grad[p] = grad
             parameter_num = (parameter_num + 1) % len(self.params)
+
         return self.params
 
 
-def run(func, params, itterations=1000, step=0.2, momentum=True):
+def run(func, params, itterations=1000, **kwargs):
     optimizer = GradientDescent(func, params)
-    optimizer.optimize(m=itterations, step=step, momentum=momentum)
+    optimizer.optimize(m=itterations, **kwargs)
     return optimizer
 
 
