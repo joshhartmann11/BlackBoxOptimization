@@ -168,7 +168,7 @@ class ShuffledComplexEvolution(bbo.Optimization):
             for A in complexes:
                 D.extend(A)
 
-        self._tuple_to_param(D[0]["params"])
+        self._tuple_to_params(D[0]["params"])
         self.error = D[0]["result"]
         self.D = D
 

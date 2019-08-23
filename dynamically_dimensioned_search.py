@@ -28,14 +28,15 @@ class DynamicallyDimensionedSearch(bbo.Optimization):
         # Make an initial evalutation
         best_solution = self._run()
         self.error = best_solution
-        prev_params = copy.deepcopy(self.params)
+        prev_params = self._params_to_tuple()
+        curr_params = list(prev_params)
 
         # For every itteration
         for i in range(m - 1):
             # Calculate the probability each parameter will be perturbed
             p_included = 1 - math.log(i + 1) / math.log(m)
             # Perturb parameters
-            for p in self.params:
+            for j, p in enumerate(self.params):
                 # At least one parameter has to be changed
                 at_least_one = True
                 while (at_least_one):
@@ -43,25 +44,30 @@ class DynamicallyDimensionedSearch(bbo.Optimization):
                     if random.random() < p_included:
                         at_least_one = False
                         # Calculate the change
-                        p.value += random.gauss(0, 1) * r * (p.max - p.min)
+                        value = curr_params[j]
+                        value += random.gauss(0, 1) * r * (p.max - p.min)
                         # Reflect at variable boundaries
-                        if p.value > p.max:
-                            p.value = p.max - (p.value - p.max)
-                            if p.value < p.min:
-                                p.value = p.max
-                        elif p.value < p.min:
-                            p.value = p.min + (p.min - p.value)
-                            if p.value > p.max:
-                                p.value = p.min
+                        if value > p.max:
+                            value = p.max - (value - p.max)
+                            if value < p.min:
+                                value = p.max
+                        elif value < p.min:
+                            value = p.min + (p.min - value)
+                            if value > p.max:
+                                value = p.min
+
+                        curr_params[j] = value
 
             # Get the solution at the changed parameters
-            solution = self._run()
+            solution = self._run(curr_params)
             if solution > best_solution: # Worse, restore parameters
-                self.params = copy.deepcopy(prev_params)
+                curr_params = list(prev_params)
             else: # Better, keep parameters
                 best_solution = solution
-                self.error = solution
-                prev_params = copy.deepcopy(self.params)
+                prev_params = tuple(curr_params)
+
+        self.error = best_solution
+        self._tuple_to_params(curr_params)
 
         return self.params
 

@@ -55,14 +55,14 @@ class Optimization():
         str += "\n".join(["  {}: {}".format(p.name, p.value) for p in self.params])
         return str
 
-    def _param_to_tuple(self):
+    def _params_to_tuple(self):
         pt = []
         for p in self.params:
-            pt += p.value
+            pt.append(p.value)
         pt = tuple(pt)
         return pt
 
-    def _tuple_to_param(self, t):
+    def _tuple_to_params(self, t):
         for i in range(len(self.params)):
             self.params[i].value = t[i]
 
