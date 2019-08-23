@@ -37,11 +37,11 @@ class DynamicallyDimensionedSearch(bbo.Optimization):
             # Perturb parameters
             for p in self.params:
                 # At least one parameter has to be changed
-                at_least_one = false
+                at_least_one = True
                 while (at_least_one):
                     # Determine if it is to be perturbed
                     if random.random() < p_included:
-                        at_least_one = True
+                        at_least_one = False
                         # Calculate the change
                         p.value += random.gauss(0, 1) * r * (p.max - p.min)
                         # Reflect at variable boundaries
