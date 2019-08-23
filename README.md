@@ -12,4 +12,6 @@ parameters then the perturbation is kept.
 Just a classic gradient descent method, using derivatives found through function evaluation and implemented with Adam to speed things up.
 
 ## Shuffled Complex Evolution
+Written from "https://link.springer.com/article/10.1007/BF00939380"
+
 Starts by generating random input parameters.  The sample is then split into complexes where the parameters are evolved. The samples are then brought together and re-split into new complexes where the process continues.

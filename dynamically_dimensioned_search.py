@@ -11,7 +11,6 @@ This algorithm is written from
     Authors: Bryan A. Tolson and Christine A. Shoemaker
 """
 
-import copy
 import random
 import math
 
