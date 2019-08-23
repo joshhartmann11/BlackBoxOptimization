@@ -47,6 +47,7 @@ class Optimization():
                 self.params.append(po)
             else:
                 self.params.append(p)
+        self.params.sort(key=lambda x: x.name)
         self.error = float('inf')
 
     def __str__(self):
@@ -54,10 +55,33 @@ class Optimization():
         str += "\n".join(["  {}: {}".format(p.name, p.value) for p in self.params])
         return str
 
-    def _run(self):
-        kwargs = {}
+    def _param_to_tuple(self):
+        pt = []
         for p in self.params:
-            kwargs[p.name] = p.value
+            pt += p.value
+        pt = tuple(pt)
+        return pt
+
+    def _tuple_to_param(self, t):
+        for i in range(len(self.params)):
+            self.params[i].value = t[i]
+
+
+    def _valid_point(self, point):
+        for i in range(len(self.params)):
+            if point[i] < self.params[i].min or \
+               point[i] > self.params[i].max:
+                return False
+        return True
+
+    def _run(self, params=None):
+        kwargs = {}
+        if not params:
+            for p in self.params:
+                kwargs[p.name] = p.value
+        else:
+            for i in range(len(self.params)):
+                kwargs[self.params[i].name] = params[i]
         return self.func(**kwargs)
 
     def optimize(self):

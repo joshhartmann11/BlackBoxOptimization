@@ -8,10 +8,10 @@ import statistics as stats
 from black_box_optimization import Parameter
 from gradient_descent import GradientDescent
 from dynamically_dimensioned_search import DynamicallyDimensionedSearch
-from combined_dds_gd import CombinedDDSGD
+from shuffled_complex_evolution import ShuffledComplexEvolution
 
-TEST_REPEAT = 1000
-TEST_ITTERATIONS = 100
+TEST_REPEAT = 100
+TEST_ITTERATIONS = 500
 TEST_DIMENSIONS = 10
 
 
@@ -38,7 +38,7 @@ def test_function_2(**kwargs):
     return sum_conv
 
 
-# Rosenbrock Function
+# Rosenbrock Function (BROKEN: Working on this)
 #   f(x_0, x_1) = b(x_1 - x_0^2) + (a - x_0^2)^2
 def test_function_3(**kwargs):
     global test_class
@@ -148,4 +148,8 @@ if __name__ == "__main__":
 
     print("\nTesting Dynamically Dimensioned Search...")
     test_class = TestProblem(DynamicallyDimensionedSearch, TEST_DIMENSIONS)
+    test_class.run_all(TEST_REPEAT)
+
+    print("\nTesting Shuffled Complex Evolution...")
+    test_class = TestProblem(ShuffledComplexEvolution, TEST_DIMENSIONS)
     test_class.run_all(TEST_REPEAT)
