@@ -17,6 +17,8 @@ import black_box_optimization as bbo
 
 class ShuffledComplexEvolution(bbo.Optimization):
 
+    D = None
+
     def _weighted_sample(self, n, samples, weights):
         ret_samples = []
         ret_loc = []
@@ -45,14 +47,17 @@ class ShuffledComplexEvolution(bbo.Optimization):
         func_calls = 0
 
         # Step 1: Generate m x p points and evaluate
-        D = []
-        for i in range(m * p):
-            point = [0] * len(self.params)
-            for j in range(len(self.params)):
-                param = self.params[j]
-                point[j] = (param.max - param.min) * random.random() + param.min
-            D.append({"params": tuple(point), "result": self._run(point)})
-            func_calls += 1
+        if not self.D:
+            D = []
+            for i in range(m * p):
+                point = [0] * len(self.params)
+                for j in range(len(self.params)):
+                    param = self.params[j]
+                    point[j] = (param.max - param.min) * random.random() + param.min
+                D.append({"params": tuple(point), "result": self._run(point)})
+                func_calls += 1
+        else:
+            D = self.D
 
         while (func_calls < itt):
 
@@ -165,6 +170,7 @@ class ShuffledComplexEvolution(bbo.Optimization):
 
         self._tuple_to_param(D[0]["params"])
         self.error = D[0]["result"]
+        self.D = D
 
         return self.params
 
